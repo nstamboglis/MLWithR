@@ -6,6 +6,12 @@ The purpose of this project is to showcase practical solutions to real-world mac
 
 The exercises and techniques are solved in dedicated r scripts.
 
+**List of my scripts**
+
+Below are the scripts I've played with. All original sources are listed within the scripts.
+
+* **IrisClassification.R** -> simple iris classification problem;
+* **FeatureSelectionCaret.R** -> exploration of feature selection (and more) using Caret.
 
 Resources
 
