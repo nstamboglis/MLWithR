@@ -37,3 +37,60 @@ split <- rsample::initial_split(ames, prop = 0.7,
                                 strata = "Sale_Price")
 ames_train  <- rsample::training(split)
 ames_test   <- rsample::testing(split)
+
+# |---- 2. Target engineering
+
+transformed_response <- log(ames_train$Sale_Price)
+# Taake the log of the dependent variable to avoid 
+
+# log transformation
+ames_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_log(all_outcomes())
+ames_recipe 
+# Alternative approach: use a recipe to be applied later on
+
+# Alternatives to taking logs (if dependent vaiable has negative records)
+transformed_response_1p <- log1p(ames_train$Sale_Price)
+# Adds 1 to the dependent variable prior taking logs
+
+# Log transform a value
+y <- log(10)
+
+# Undo log-transformation 8used to translate the predicted results back to their original scale)
+exp(y)
+## [1] 10
+
+# Box Cox transform a value
+lambda <- 2
+y <- forecast::BoxCox(10, lambda)
+
+# Inverse Box Cox function
+inv_box_cox <- function(x, lambda) {
+  # for Box-Cox, lambda = 0 --> log transform
+  if (lambda == 0) exp(x) else (lambda*x + 1)^(1/lambda) 
+}
+
+# Undo Box Cox-transformation (again to go back from prediction scale to original dependent variable scale)
+inv_box_cox(y, lambda)
+## [1] 10
+## attr(,"lambda")
+## [1] -0.03616899
+
+# 3.3 misiing data
+sum(is.na(AmesHousing::ames_raw))
+
+# Missing values visualization
+AmesHousing::ames_raw %>%
+  is.na() %>%
+  reshape2::melt() %>%
+  ggplot(aes(Var2, Var1, fill=value)) + 
+  geom_raster() + 
+  coord_flip() +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  scale_fill_grey(name = "", 
+                  labels = c("Present", 
+                             "Missing")) +
+  xlab("Observation") +
+  theme(axis.text.y  = element_text(size = 4))
+
+
