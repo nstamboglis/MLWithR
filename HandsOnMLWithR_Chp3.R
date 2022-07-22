@@ -93,4 +93,24 @@ AmesHousing::ames_raw %>%
   xlab("Observation") +
   theme(axis.text.y  = element_text(size = 4))
 
+# 3.3 Dealing with missing values
 
+AmesHousing::ames_raw %>% 
+  filter(is.na(`Garage Type`)) %>% 
+  select(`Garage Type`, `Garage Cars`, `Garage Area`)
+# Garage Cars and Garage Area have 0s imputed when missing
+
+# Visualize missing values
+visdat::vis_miss(AmesHousing::ames_raw, cluster = TRUE)
+
+# imputation based on median
+ames_recipe %>%
+  recipes::step_impute_median(Gr_Liv_Area)
+
+# imputation based on kNN
+ames_recipe %>%
+  recipes::step_impute_knn(all_predictors(), neighbors = 6)
+
+# imputated based on trees
+ames_recipe %>%
+  recipes::step_impute_bag(all_predictors())
